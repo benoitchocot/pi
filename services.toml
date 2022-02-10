@@ -1,0 +1,6 @@
+[http]
+  [http.services]
+    [http.services.nas]
+      [http.services.nas.loadBalancer]
+        [[http.services.nas.loadBalancer.servers]]
+          url = "http://192.168.1.16:81/"

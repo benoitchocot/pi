@@ -1,0 +1,67 @@
+version: '3'
+
+volumes:
+  nextcloud:
+  db:
+  reverse-proxy:
+
+services:
+  reverse-proxy:
+    restart: always
+    image: traefik:v2.0
+    ports:
+    - "443:443"
+    - "80:80"
+    volumes:
+    - /srv/services.toml:/etc/traefik/services.toml
+    - /srv/traefik.toml:/etc/traefik/traefik.toml
+    - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+    - "traefik.http.routers.api.rule=Host(`traefik.chocot.be`)"
+    - "traefik.http.routers.api.service=api@internal"
+    - "traefik.http.routers.api.entrypoints=http"
+    - "traefik.http.routers.api.middlewares=auth"
+    - "traefik.http.middlewares.auth.basicauth.users=pi:$$apr1$$5uYcSiA9$$pf3V/rEtqAG1I0ZLHRnT40"
+    - "traefik.http.routers.nas.entrypoints=http"
+    - "traefik.http.routers.nas.rule=Host(`omv.chocot.be`)"
+    - "traefik.http.routers.nas.service=nas@file"
+
+  nextcloud:
+    image: nextcloud
+    restart: always
+    links:
+    - reverse-proxy
+    - db
+    volumes:
+    - ./nextcloud:/var/www/html
+    - ./nextcloud/data:/var/www/html/data
+    - ./nextcloud/config:/var/www/html/config
+    - ./nextcloud/apps:/var/www/html/apps
+    environment:
+    - MYSQL_PASSWORD=benoit45+
+    - MYSQL_DATABASE=nextcloud
+    - MYSQL_USER=nextcloud
+    - MYSQL_HOST=mariadb-srv
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.cloud.entrypoints=http"
+    - "traefik.http.routers.cloud.rule=Host(`cloud.chocot.be`)"
+    - "traefik.http.routers.cloud.service=cloud"
+    - "traefik.http.services.cloud.loadbalancer.server.port=80"
+
+  db:
+    image: linuxserver/mariadb
+    container_name: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - MYSQL_ROOT_PASSWORD=benoit45+
+    - TZ=Europe/London
+    - MYSQL_DATABASE=nextcloud #optional
+    - MYSQL_USER=nextcloud #optional
+    - MYSQL_PASSWORD=benoit45+ #optional
+    volumes:
+    - ./db:/var/lib/mysql
+    restart: unless-stopped
+
