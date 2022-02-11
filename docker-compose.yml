@@ -20,6 +20,51 @@ services:
     restart: always
     labels:
     - traefik.enable=false
+  transmission:
+    image: lscr.io/linuxserver/transmission
+    container_name: transmission
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/London
+    - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
+    - USER=admin #optional
+    - PASS=benoit45+ #optional
+    volumes:
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/transmission/config/:/config
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/transmission/downloads:/downloads
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/transmission/watch:/watch
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/animes:/animes
+    ports:
+    - 9091:9091
+    - 51413:51413
+    - 51413:51413/udp
+    restart: unless-stopped
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.torrent.loadbalancer.server.port=9091"
+    - "traefik.http.routers.torrent.rule=Host(`torrent.chocot.be`)"
+    - "traefik.http.routers.torrent.service=torrent"
+
+  plex:
+    image: lscr.io/linuxserver/plex
+    container_name: plex
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - VERSION=docker
+    - PLEX_CLAIM=claim-J5MDH9UhbyVrWEp8pCtB
+    volumes:
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/library:/config
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/tvseries:/tv
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/movies:/movies
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/animes:/animes
+    restart: unless-stopped
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.video.loadbalancer.server.port=32400"
+    - "traefik.http.routers.video.rule=Host(`video.chocot.be`)"
+    - "traefik.http.routers.video.service=video"
 
   adminer:
     image: adminer:4.6.3-standalone
@@ -47,6 +92,26 @@ services:
     - "traefik.http.routers.cloud.service=cloud"
     depends_on:
     - db
+
+  calibre:
+    image: linuxserver/calibre:arch
+    container_name: calibre
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/Paris
+    - CLI_ARGS= #optional
+    volumes:
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/calibre/config:/config
+    ports:
+    - 8080:8080
+    - 8081:8081
+    restart: unless-stopped
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.book.loadbalancer.server.port=8080"
+    - "traefik.http.routers.book.rule=Host(`book.chocot.be`)"
+    - "traefik.http.routers.book.service=book"
 
   reverse-proxy:
     restart: always
