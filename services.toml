@@ -4,3 +4,19 @@
       [http.services.nas.loadBalancer]
         [[http.services.nas.loadBalancer.servers]]
           url = "http://192.168.1.16:81/"
+
+    [http.services.web]
+      [http.services.web.loadBalancer]
+        [[http.services.web.loadBalancer.servers]]
+          url = "http://192.168.1.16:82/"
+
+
+
+
+
+
+
+
+
+
+
