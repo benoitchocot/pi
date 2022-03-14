@@ -204,4 +204,18 @@ services:
     - "traefik.http.routers.web.rule=Host(`chocot.be`)"
     - "traefik.http.routers.web.service=web@file"
 
+  joal:
+    image: anthonyraymond/joal:2.1.24-arm
+    container_name: joal
+    restart: unless-stopped
+    depends_on:
+    - reverse-proxy
+    volumes:
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/joal-conf:/data
+    command: ["--joal-conf=/data", "--spring.main.web-environment=true", "--server.port=80", "--joal.ui.path.prefix=joal", "--joal.ui.secret-token=benoit45+"]
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.ratio.loadbalancer.server.port=80"
+    - "traefik.http.routers.ratio.rule=Host(`ratio.chocot.be`)"
+    - "traefik.http.routers.ratio.service=ratio"
 
