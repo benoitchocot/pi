@@ -219,3 +219,20 @@ services:
     - "traefik.http.routers.ratio.rule=Host(`ratio.chocot.be`)"
     - "traefik.http.routers.ratio.service=ratio"
 
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    environment:
+    - WEBPASSWORD=benoit45+
+    volumes:
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/pihole/etc-pihole:/etc/pihole
+    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+    - NET_ADMIN
+    restart: unless-stopped
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.pihole.loadbalancer.server.port=80"
+    - "traefik.http.routers.pihole.rule=Host(`pihole.chocot.be`)"
+    - "traefik.http.routers.pihole.service=pihole"
+
