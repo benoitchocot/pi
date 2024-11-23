@@ -1,0 +1,14 @@
+SAMBA
+
+[partage]
+   path = /mnt/usb
+   browseable = yes
+   writeable = yes
+   guest ok = yes
+   read only = no
+   create mask = 0777
+   directory mask = 0777
+   valid users = bonoit
+   guest ok = no
+
+

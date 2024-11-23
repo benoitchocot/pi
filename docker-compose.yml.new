@@ -1,0 +1,109 @@
+volumes:
+  db:
+  reverse-proxy:
+
+services:
+  emulatorjs:
+    image: lscr.io/linuxserver/emulatorjs
+    container_name: emulatorjs
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - SUBFOLDER=/ #optional
+    volumes:
+      - /mnt/usb/pi/emu/config:/config
+      - /mnt/usb/pi/emu/data:/data
+    ports:
+      - 3000:3000
+      - 83:80
+      - 4001:4001 #optional
+    restart: unless-stopped
+    labels:
+      - "traefik.http.services.emu.loadbalancer.server.port=80"
+      - "traefik.http.routers.emu.rule=Host(`emu.chocot.be`)"
+      - "traefik.http.routers.emu.service=emu"
+      - "traefik.enable=true"
+      - "traefik.http.services.emuconfig.loadbalancer.server.port=3000"
+      - "traefik.http.routers.emuconfig.rule=Host(`emuconfig.chocot.be`)"
+      - "traefik.http.routers.emuconfig.service=emuconfig"
+
+  db:
+    image: linuxserver/mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=benoit45+
+      - TZ=Europe/Paris
+      - MYSQL_DATABASE= symfony
+      - MYSQL_USER= symfony
+      - MYSQL_PASSWORD= benoit45+
+    volumes:
+      - /mnt/usb/pi/db:/var/lib/mysql
+    restart: always
+    labels:
+      - traefik.enable=false
+    networks:
+      - symfony
+
+  adminer:
+    image: adminer:4.6.3-standalone
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adminer.rule=Host(`db.chocot.be`)
+      - traefik.port=8079
+    depends_on:
+      - db
+
+  reverse-proxy:
+    restart: always
+    image: traefik:v2.0
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - /mnt/usb/pi/services.toml:/etc/traefik/services.toml
+      - /mnt/usb/pi/traefik.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.http.routers.api.rule=Host(`traefik.chocot.be`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.entrypoints=http"
+      - "traefik.http.routers.api.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=pi:$$apr1$$5uYcSiA9$$pf3V/rEtqAG1I0ZLHRnT40"
+
+  apache:
+    image: httpd:2.4
+    container_name: apache
+    restart: always
+    volumes:
+      - /mnt/usb/pi/apache:/usr/local/apache2/htdocs/
+      - /mnt/usb/pi/apache-config/httpd.conf:/usr/local/apache2/conf/httpd.conf
+    ports:
+      - 8080:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.apache.rule=Host(`chocot.be`)"
+      - "traefik.http.routers.apache.entrypoints=http"
+      - "traefik.http.services.apache.loadbalancer.server.port=80"
+
+  web:
+    image: php:7.4-apache
+    container_name: apache
+    volumes:
+      - /mnt/usb/pi/symfony:/var/www/html
+      - /mnt/usb/pi/symfony/php.ini:/usr/local/etc/php/php.ini
+    ports:
+      - "8082:80"
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+    networks:
+      - Symfony
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.symfony.rule=Host(`symfony.chocot.be`)"
+      - "traefik.http.routers.symfony.entrypoints=http"
+      - "traefik.http.services.symfony.loadbalancer.server.port=81"
+
+networks:
+  symfony:
