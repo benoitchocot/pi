@@ -12,3 +12,5 @@ SAMBA
    guest ok = no
 
 
+sudo smbpasswd -a $USER
+sudo nano /etc/samba/smb.conf
