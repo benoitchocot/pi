@@ -116,6 +116,43 @@ Exemples de paquets courants :
 - `nodejs` : Runtime Node.js
 - `docker.io` : Docker
 
+## Installation de Samba
+
+```sudo apt install samba ```
+Ensuite, modifier le mot de passe de l'utilisateur 
+```sudo smbpasswd -a $USER```
+Ensuite, modifier le fichier de configuration de samba pour la lecture/écriture des dossiers à partage
+```sudo nano /etc/samba/smb.conf```
+Puis ajouter ceci
+```
+[partage]
+   path = /mnt/usb
+   browseable = yes
+   writeable = yes
+   guest ok = yes
+   read only = no
+   create mask = 0777
+   directory mask = 0777
+   valid users = $USER
+   guest ok = no
+```
+
+## Montage du disque externe
+Il faut tout d'abord créer le dossier où les fichiers seront accessibles
+```mkdir /mnt/usb```
+On peut ensuite ajouter les droits à l'utilisateur sur le dossier
+```sudo chown -R $user /mnt/usb```
+On recherche l'identifiant de notre disque pour l'ajouter un fichier prochainement
+```sudo fdisk-l```
+On identifie notre disque (en général dev/sda1) puis avec la commande suivante, on récupère son UUID
+```sudo blkid /dev/sda1```
+Maintenant que l'on a notre UUID (83c99957-a207-472a-a6ee-b5b1c81ef611) on va pouvoir éditer le fichier fstab pour y ajouter notre disque
+```sudo nano /etc/fstab```
+On ajoute cette ligne à la fin du fichier
+```UUID=83c99957-a207-472a-a6ee-b5b1c81ef611 /mnt/usb ext4 defaults,auto,rw,nofail 0 1```
+Et on exécute la commande pour monter le disque à cet emplacement
+```sudo mount /mnt/usb```
+
 ## Déploiement du serveur
 
 ### 1. Configuration de NGINX
