@@ -1,5 +1,5 @@
-version: '3'
-
+# Remplacer tout les endroits où il y a des variables par vos informations
+# Je n'utilise plus ce fichier, ce n'est pas impossible qu'il ne fonctionne pas en l'état, mais possède pas mal de choses que l'ont peut réutiliser
 volumes:
   nextcloud:
   db:
@@ -15,8 +15,8 @@ services:
     - TZ=Europe/Paris
     - SUBFOLDER=/ #optional
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/emu/config:/config
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/emu/data:/data
+    - /$PATH/emu/config:/config
+    - /$PATH/emu/data:/data
     ports:
     - 3000:3000
     - 83:80
@@ -24,11 +24,11 @@ services:
     restart: unless-stopped
     labels:
     - "traefik.http.services.emu.loadbalancer.server.port=80"
-    - "traefik.http.routers.emu.rule=Host(`emu.chocot.be`)"
+    - "traefik.http.routers.emu.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.emu.service=emu"
     - "traefik.enable=true"
     - "traefik.http.services.emuconfig.loadbalancer.server.port=3000"
-    - "traefik.http.routers.emuconfig.rule=Host(`emuconfig.chocot.be`)"
+    - "traefik.http.routers.emuconfig.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.emuconfig.service=emuconfig"
 
   db:
@@ -36,13 +36,13 @@ services:
     environment:
     - PUID=1000
     - PGID=1000
-    - MYSQL_ROOT_PASSWORD=benoit45+
+    - MYSQL_ROOT_PASSWORD=$PASSWORD
     - TZ=Europe/Paris
-    - MYSQL_DATABASE=nextcloud #optional
-    - MYSQL_USER=nextcloud #optional
-    - MYSQL_PASSWORD=benoit45+ #optional
+    - MYSQL_DATABASE=#optional
+    - MYSQL_USER=#optional
+    - MYSQL_PASSWORD=#optional
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/db:/var/lib/mysql
+    - /$PATH/db:/var/lib/mysql
     restart: always
     labels:
     - traefik.enable=false
@@ -51,7 +51,7 @@ services:
     image: adminer:4.6.3-standalone
     labels:
     - traefik.enable=true
-    - traefik.http.routers.adminer.rule=Host(`db.chocot.be`)
+    - traefik.http.routers.adminer.rule=Host(`$PATH`)
     - traefik.port=8079
     depends_on:
     - db
@@ -61,19 +61,19 @@ services:
     - db
     image: wordpress:latest
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/wordpress/:/var/www/html
+    - /$PATH/wordpress/:/var/www/html
     ports:
     - "8000:80"
     restart: always
     environment:
-    - WORDPRESS_DB_HOST=db
-    - WORDPRESS_DB_USER=root
-    - WORDPRESS_DB_PASSWORD=benoit45+
-    - WORDPRESS_DB_NAME=wordpress
+    - WORDPRESS_DB_HOST=$HOST
+    - WORDPRESS_DB_USER=$USER
+    - WORDPRESS_DB_PASSWORD=$PASSWD
+    - WORDPRESS_DB_NAME=$DBNAME
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.wp.loadbalancer.server.port=80"
-    - "traefik.http.routers.wp.rule=Host(`shop.chocot.be`)"
+    - "traefik.http.routers.wp.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.wp.service=wp"
 
   transmission:
@@ -84,13 +84,12 @@ services:
     - PGID=1000
     - TZ=Europe/Paris
     - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
-    - USER=admin
-    - PASS=benoit45+
+    - USER=$USER
+    - PASS=$PASSWD
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/transmission/config/:/config
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/transmission/downloads:/downloads
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/transmission/watch:/watch
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/animes:/animes
+    - /$PATH/transmission/config/:/config
+    - /$PATH/transmission/downloads:/downloads
+    - /$PATH/transmission/watch:/watch
     ports:
     - 9091:9091
     - 51413:51413
@@ -99,7 +98,7 @@ services:
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.torrent.loadbalancer.server.port=9091"
-    - "traefik.http.routers.torrent.rule=Host(`torrent.chocot.be`)"
+    - "traefik.http.routers.torrent.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.torrent.service=torrent"
 
   jackett:
@@ -111,15 +110,15 @@ services:
     - TZ=Europe/London
     - AUTO_UPDATE=true
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/gilett/config:/config
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/gilett/downloads:/downloads
+    - /$PATH/gilett/config:/config
+    - /$PATH/gilett/downloads:/downloads
     ports:
     - 9117:9117
     restart: unless-stopped
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.gilett.loadbalancer.server.port=9117"
-    - "traefik.http.routers.gilett.rule=Host(`gilett.chocot.be`)"
+    - "traefik.http.routers.gilett.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.gilett.service=gilett"
 
   sonarr:
@@ -130,56 +129,58 @@ services:
     - PGID=1000
     - TZ=Europe/London
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/sonarr/config:/config
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/sonarr/tvseries:/tv #optional
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/transmission/downloads/complete:/downloads/complete #optional
+    - /$PATH/sonarr/config:/config
+    - /$PATH/sonarr/tvseries:/tv #optional
+    - /$PATH/transmission/downloads/complete:/downloads/complete #optional
     ports:
       - 8989:8989
     restart: unless-stopped
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
-    - "traefik.http.routers.sonarr.rule=Host(`sonarr.chocot.be`)"
+    - "traefik.http.routers.sonarr.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.sonarr.service=sonarr"
 
   app:
     image: nextcloud
     restart: always
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/nextcloud:/var/www/html
+    - /$PATH/nextcloud:/var/www/html
     environment:
     - TZ=Europe/Paris
-    - MYSQL_PASSWORD=benoit45+
-    - MYSQL_DATABASE=nextcloud
-    - MYSQL_USER=root
-    - MYSQL_HOST=db
+    - MYSQL_PASSWORD=$PASSWD
+    - MYSQL_DATABASE=$DB
+    - MYSQL_USER=$USER
+    - MYSQL_HOST=$HOST
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.cloud.loadbalancer.server.port=80"
-    - "traefik.http.routers.cloud.rule=Host(`cloud.chocot.be`)"
+    - "traefik.http.routers.cloud.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.cloud.service=cloud"
     depends_on:
     - db
+    
+# je pense que le service plex est celui qui fonctionne le moins bien
 
   plex:
     image: lscr.io/linuxserver/plex
     container_name: plex
     environment:
-    - ADVERTISE_IP=https://video.chocot.be
+    - ADVERTISE_IP=
     - PUID=1000
     - PGID=1000
     - VERSION=docker
-    - PLEX_CLAIM=claim-J5MDH9UhbyVrWEp8pCtB
+    - PLEX_CLAIM=
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/library:/config
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/tvseries:/tv
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/movies:/movies
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/plex/animes:/animes
+    - $PATH/plex/library:/config
+    - /$PATH/plex/tvseries:/tv
+    - /$PATH/plex/movies:/movies
+    - /$PATH/plex/animes:/animes
     restart: unless-stopped
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.video.loadbalancer.server.port=32400"
-    - "traefik.http.routers.video.rule=Host(`video.chocot.be`)"
+    - "traefik.http.routers.video.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.video.service=video"
 
   reverse-proxy:
@@ -189,20 +190,18 @@ services:
     - "443:443"
     - "80:80"
     volumes:
-    - /srv/services.toml:/etc/traefik/services.toml
-    - /srv/traefik.toml:/etc/traefik/traefik.toml
+    - /$PATH/services.toml:/etc/traefik/services.toml
+    - /$PATH/traefik.toml:/etc/traefik/traefik.toml
     - /var/run/docker.sock:/var/run/docker.sock
     labels:
-    - "traefik.http.routers.api.rule=Host(`traefik.chocot.be`)"
+    - "traefik.http.routers.api.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.api.service=api@internal"
     - "traefik.http.routers.api.entrypoints=http"
     - "traefik.http.routers.api.middlewares=auth"
-    - "traefik.http.middlewares.auth.basicauth.users=pi:$$apr1$$5uYcSiA9$$pf3V/rEtqAG1I0ZLHRnT40"
-    - "traefik.http.routers.nas.entrypoints=http"
-    - "traefik.http.routers.nas.rule=Host(`omv.chocot.be`)"
-    - "traefik.http.routers.nas.service=nas@file"
-    - "traefik.http.routers.web.rule=Host(`chocot.be`)"
-    - "traefik.http.routers.web.service=web@file"
+    - "traefik.http.middlewares.auth.basicauth.users=$ID:$PASSWD
+    - "traefik.http.routers.$SERVICE.entrypoints=http"
+    - "traefik.http.routers.$SERVICE.rule=Host(`$VOTRE_URL`)"
+    - "traefik.http.routers.$SERVICE.service=$SERVICE@file"
 
   joal:
     image: anthonyraymond/joal:2.1.24-arm
@@ -211,28 +210,28 @@ services:
     depends_on:
     - reverse-proxy
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/joal-conf:/data
-    command: ["--joal-conf=/data", "--spring.main.web-environment=true", "--server.port=80", "--joal.ui.path.prefix=joal", "--joal.ui.secret-token=benoit45+"]
+    - $PATH/joal-conf:/data
+    command: ["--joal-conf=/data", "--spring.main.web-environment=true", "--server.port=80", "--joal.ui.path.prefix=joal", "--joal.ui.secret-token=$SECRET"]
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.ratio.loadbalancer.server.port=80"
-    - "traefik.http.routers.ratio.rule=Host(`ratio.chocot.be`)"
+    - "traefik.http.routers.ratio.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.ratio.service=ratio"
 
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
     environment:
-    - WEBPASSWORD=benoit45+
+    - WEBPASSWORD=$PASSWD
     volumes:
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/pihole/etc-pihole:/etc/pihole
-    - /srv/dev-disk-by-uuid-83c99957-a207-472a-a6ee-b5b1c81ef611/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    - /$PATH/pihole/etc-pihole:/etc/pihole
+    - /$PATH/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
     cap_add:
     - NET_ADMIN
     restart: unless-stopped
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.pihole.loadbalancer.server.port=80"
-    - "traefik.http.routers.pihole.rule=Host(`pihole.chocot.be`)"
+    - "traefik.http.routers.pihole.rule=Host(`$VOTRE_URL`)"
     - "traefik.http.routers.pihole.service=pihole"
 
