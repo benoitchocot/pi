@@ -259,14 +259,28 @@ Ceci est l'installation pour MON raspberry, un Pi4B et RaspOS en 64 bits. Adapte
 
 ```sudo chmod a+r /etc/apt/keyrings/docker.asc```
 
-## Initialisation du Docker Compose
+```echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null```
+
+```sudo apt-get update```
+
+```sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin```
+
+Docker compose sera également installé dans ce pack
+# Ajout de l'utilisateur courant au groupe docker
+
+```sudo usermod -aG docker $USER```
+
+### Initialisation du Docker Compose
 
 Il faut télécharger les 3 fichiers suivants du repo
 
 - [Docker Compose](https://github.com/benoitchocot/pi/blob/main/docker-compose.yml)
 - [Services](https://github.com/benoitchocot/pi/blob/main/services.toml)
 - [Traefik](https://github.com/benoitchocot/pi/blob/main/traefik.toml)
-- 
+
 Placez ces 3 fichiers dans le même dossier (pour ma part, /mnt/usb/pi). Déplacez vous dans le dossier où sont téléchargés ces 3 fichiers, et faites
 
 ```sudo docker compose up -d```
@@ -274,35 +288,8 @@ Placez ces 3 fichiers dans le même dossier (pour ma part, /mnt/usb/pi). Déplac
 Cela va installer les containers de dockers. En fonction de vos services crées dans services.toml et le docker compose, vous aurez accès à une multitude de serveurs webs !
 
 
-# Add the repository to Apt sources:
-```echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null```
-```sudo apt-get update```
-``` sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin```
+# A partir d'ici je n'ai jamais effectué la suite. Essayez d'en tirer le meilleur parti possible pour vos projets !
 
-Docker compose sera également installé dans ce pack
-
-## Ajout de l'utilisateur courant au groupe docker
-
-```sudo usermod -aG docker $USER```
-
-## Initialisation du Docker Compose
-
-Il faut télécharger les 3 fichiers suivants du repo
-
-- [Docker Compose](https://github.com/benoitchocot/pi/blob/main/docker-compose.yml)
-
-- [Services](https://github.com/benoitchocot/pi/blob/main/services.toml)
-
-- [Traefik](https://github.com/benoitchocot/pi/blob/main/traefik.toml)
-
-Placez ces 3 fichiers dans le même dossier (pour ma part, /mnt/usb/pi). Déplacez vous dans le dossier où sont téléchargés ces 3 fichiers, et faites
-
-```sudo docker compose up -d```
-
-Cela va installer les containers de dockers. En fonction de vos services crées dans services.toml et le docker compose, vous aurez accès à une multitude de serveurs webs ! 
 
 ## Sécurisation du serveur
 
