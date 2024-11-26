@@ -11,8 +11,6 @@ Bienvenue dans le manuel d'installation complet pour configurer et déployer un 
 5. [Services supplémentaires](#services-supplémentaires)
 6. [Sécurisation du serveur](#sécurisation-du-serveur)
 7. [Dépannage](#dépannage)
-8. [Contribuer](#contribuer)
-9. [Licence](#licence)
 
 ## Prérequis
 
@@ -248,10 +246,17 @@ cp -r /chemin/vers/votre/application/* /var/www/mon-application/
 ## Services supplémentaires
 
 ### Docker
+
+Ceci est l'installation pour MON raspberry, un Pi4B et RaspOS en 64 bits. Adaptez selon la doc officielle de Docker
+
 ```sudo apt-get update```
+
 ```sudo apt-get install ca-certificates curl```
+
 ```sudo install -m 0755 -d /etc/apt/keyrings```
+
 ```sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc```
+
 ```sudo chmod a+r /etc/apt/keyrings/docker.asc```
 
 # Add the repository to Apt sources:
@@ -268,6 +273,21 @@ Docker compose sera également installé dans ce pack
 
 ```sudo usermod -aG docker $USER```
 
+## Initialisation du Docker Compose
+
+Il faut télécharger les 3 fichiers suivants du repo
+
+- [Docker Compose](https://github.com/benoitchocot/pi/blob/main/docker-compose.yml)
+
+- [Services](https://github.com/benoitchocot/pi/blob/main/services.toml)
+
+- [Traefik](https://github.com/benoitchocot/pi/blob/main/traefik.toml)
+
+Placez ces 3 fichiers dans le même dossier (pour ma part, /mnt/usb/pi). Déplacez vous dans le dossier où sont téléchargés ces 3 fichiers, et faites
+
+```sudo docker compose up -d```
+
+Cela va installer les containers de dockers. En fonction de vos services crées dans services.toml et le docker compose, vous aurez accès à une multitude de serveurs webs ! 
 
 ## Sécurisation du serveur
 
@@ -353,14 +373,3 @@ Vérifiez le statut d'un service spécifique :
 ```bash
 sudo systemctl status nom-du-service
 ```
-
-## Contribution
-Les contributions sont les bienvenues ! Pour contribuer :
-1. Fork le projet
-2. Créez une branche pour votre fonctionnalité
-3. Committez vos changements
-4. Poussez vers la branche
-5. Ouvrez une Pull Request
-
-## Licence
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
