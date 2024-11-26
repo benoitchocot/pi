@@ -28,6 +28,8 @@ Avant de commencer, vous aurez besoin de :
 
 1. Téléchargez [Raspberry Pi Imager](https://www.raspberrypi.org/software/) et installez-le sur votre ordinateur.
 2. Choisissez le système d'exploitation souhaité, tel que [Raspberry Pi OS](https://www.raspberrypi.org/software/operating-systems/), et gravez-le sur votre carte SD.
+Maintenant, dans les réglages de Pi Imager, on peut écrire différents réglages pour éviter d'avoir besoin d'une interface graphique sur le Raspberry. Activez SSH, configurez un identifiant pour le raspberry et pour internet
+
 3. Une fois l'image écrite, insérez la carte SD dans votre Raspberry Pi et démarrez-le.
 4. Suivez les instructions à l'écran pour configurer la langue, le fuseau horaire et la connexion réseau.
 
