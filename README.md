@@ -267,7 +267,7 @@ Docker compose sera également installé dans ce pack
 ```sudo usermod -aG docker $USER```
 
 
-## Sécurisation
+## Sécurisation du serveur
 
 ### 1. Modification du mot de passe par défaut
 ```bash
