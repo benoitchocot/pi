@@ -1,11 +1,12 @@
+# Remplacer $SERVICES par le nom du service que vous voulez (ex : api, etc...) et l'ip du raspberry par son ip locale
 [http]
   [http.services]
-    [http.services.symfony]
-      [http.services.symfony.loadBalancer]
-        [[http.services.symfony.loadBalancer.servers]]
-          url = "http://192.168.1.16:81/"
+    [http.services.$SERVICES]
+      [http.services.$SERVICES.loadBalancer]
+        [[http.services.$SERVICES.loadBalancer.servers]]
+          url = "http://IP_DU_RASPBERRY:PORT/"
 
-    [http.services.angular]
-      [http.services.angular.loadBalancer]
+    [http.services.$SERVICES]
+      [http.services.$SERVICES.loadBalancer]
         [[http.services.angular.loadBalancer.servers]]
-          url = "http://192.168.1.16:82/"
+          url = "http://IP_DU_RASPBERRY:PORT"
