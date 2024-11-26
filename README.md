@@ -55,7 +55,7 @@ Pour installer les outils nécessaires à la configuration de votre serveur, ex�
 sudo apt update
 sudo apt upgrade -y
 sudo apt install -y <nom-des-paquets>
-
+```
 Remplacez <nom-des-paquets> par les dépendances spécifiques de votre serveur (par exemple, nginx, mysql-server, etc.).
 
 ## Services supplémentaires
@@ -186,7 +186,38 @@ Configurez votre site web :
 sudo nano /etc/nginx/sites-available/mon-site
 ```
 
-### 2. Configuration de la base de données
+### 2. Configuration de Apache2
+
+```bash
+sudo apt install apache2
+sudo systemctl enable apache2
+sudo systemctl start apache2
+```
+
+Configurez votre site web :
+```bash
+sudo nano /etc/apache2/sites-available/mon-site
+```
+Pensez à ne pas utiliser les ports 80 (Traefik) et 83 (Emulateur Retro)
+```sudo nano /etc/apache2/ports.conf```
+```Listen 81```
+
+Pour ajouter de nouveaux sites, rajoutez autant de ports dans Ports.conf que désiré.
+
+Il faut ensuite copier la configuration de base dans sites-available : 
+
+```sudo cp /etc/apache2/sites-available/mon-site /etc/apache2/sites-available/mon-site2```
+
+Le modifier pour indiquer le bon dossier,
+
+Puis activer le site
+
+```sudo a2ensite mon-site2```
+
+Faites régulièrement ```sudo systemctl restart apache2``` pour ne pas avoir de soucis
+
+
+### 3. Configuration de la base de données
 
 Pour MySQL :
 ```bash
@@ -201,7 +232,7 @@ GRANT ALL PRIVILEGES ON mabase.* TO 'monutilisateur'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 3. Déploiement des fichiers d'application
+### 4. Déploiement des fichiers d'application
 
 ```bash
 # Créez le répertoire de déploiement
@@ -215,38 +246,26 @@ cp -r /chemin/vers/votre/application/* /var/www/mon-application/
 ## Services supplémentaires
 
 ### Docker
-```bash
-# Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
+```sudo apt-get update```
+```sudo apt-get install ca-certificates curl```
+```sudo install -m 0755 -d /etc/apt/keyrings```
+```sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc```
+```sudo chmod a+r /etc/apt/keyrings/docker.asc```
 
 # Add the repository to Apt sources:
-echo \
+```echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-```
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null```
+```sudo apt-get update```
 ``` sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin```
 
 Docker compose sera également installé dans ce pack
 
-# Ajout de l'utilisateur courant au groupe docker
+## Ajout de l'utilisateur courant au groupe docker
 
 ```sudo usermod -aG docker $USER```
 
-### Node.js
-```bash
-# Installation via NodeSource
-curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-sudo apt install -y nodejs
-
-# Installation des dépendances globales courantes
-sudo npm install -g pm2
-```
 
 ## Sécurisation
 
