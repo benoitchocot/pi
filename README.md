@@ -78,7 +78,7 @@ Pour installer apache2 sur votre Raspberry Pi :
 sudo apt install apache2
 sudo systemctl enable apache2
 sudo systemctl start apache2
-
+```
 
 # Guide de déploiement d'un serveur sur Raspberry Pi
 
