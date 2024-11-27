@@ -137,13 +137,13 @@ On identifie notre disque (en général dev/sda1) puis avec la commande suivante
 
 ```sudo blkid /dev/sda1```
 
-Maintenant que l'on a notre UUID (83c99957-a207-472a-a6ee-b5b1c81ef611) on va pouvoir éditer le fichier fstab pour y ajouter notre disque
+Maintenant que l'on a notre UUID, on va pouvoir éditer le fichier fstab pour y ajouter notre disque
 
 ```sudo nano /etc/fstab```
 
 On ajoute cette ligne à la fin du fichier
 
-```UUID=83c99957-a207-472a-a6ee-b5b1c81ef611 /mnt/usb ext4 defaults,auto,rw,nofail 0 1```
+```UUID=$UUID /mnt/usb ext4 defaults,auto,rw,nofail 0 1```
 
 Et on exécute la commande pour monter le disque à cet emplacement
 
