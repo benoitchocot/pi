@@ -193,8 +193,11 @@ sudo systemctl start apache2
 Configurez votre site web :
 ```bash
 sudo nano /etc/apache2/sites-available/mon-site
+
+# Remplacez <VirtualHost *:80> en en-tête par un autre port
 ```
 Pensez à ne pas utiliser les ports 80 (Traefik) et 83 (Emulateur Retro)
+
 ```sudo nano /etc/apache2/ports.conf```
 
 Remplacez ```Listen 80``` par ```Listen 81```
