@@ -2,6 +2,8 @@
 
 Bienvenue dans le manuel d'installation complet pour configurer et déployer un serveur Raspberry Pi. Ce guide vous accompagnera étape par étape, de la configuration initiale à la mise en place de services supplémentaires sur votre serveur.
 
+Cette configuration s'adresse au système d'exploitation RaspOS Lite 64 bits.
+
 ## Table des matières
 
 1. [Prérequis](#prérequis)
@@ -21,7 +23,9 @@ Avant de commencer, vous aurez besoin de :
 - Une alimentation adaptée pour le Raspberry Pi.
 - Un câble réseau ou une connexion Wi-Fi (selon votre configuration).
 - Un clavier, une souris et un écran pour la configuration initiale (ou un accès SSH après configuration).
+- Ouvrir les ports sur la Box (22 pour ssh, 445 pour samba, 80 et 443 pour http/https)
 
+  
 ## Installation du système d'exploitation
 
 1. Téléchargez [Raspberry Pi Imager](https://www.raspberrypi.org/software/) et installez-le sur votre ordinateur.
@@ -62,18 +66,18 @@ Remplacez <nom-des-paquets> par les dépendances spécifiques de votre serveur (
 
 Dans cette section, vous pouvez détailler les services supplémentaires que vous souhaitez configurer, comme :
 
-- **Serveur web (NGINX)**
+- **Serveur web (Apache2)**
 - **Serveur de bases de données (MySQL, PostgreSQL)**
 - **Applications spécifiques (Node.js, Docker, etc.)**
 
-### Exemple : Installation et configuration de NGINX
+### Exemple : Installation et configuration de apache2
 
-Pour installer NGINX sur votre Raspberry Pi :
+Pour installer apache2 sur votre Raspberry Pi :
 
 ```bash
-sudo apt install nginx
-sudo systemctl enable nginx
-sudo systemctl start nginx
+sudo apt install apache2
+sudo systemctl enable apache2
+sudo systemctl start apache2
 
 
 # Guide de déploiement d'un serveur sur Raspberry Pi
@@ -115,32 +119,6 @@ Exemples de paquets courants :
 - `postgresql` : Base de données PostgreSQL
 - `nodejs` : Runtime Node.js
 
-## Installation de Samba
-
-```sudo apt install samba ```
-
-Ensuite, modifier le mot de passe de l'utilisateur 
-
-```sudo smbpasswd -a $USER```
-
-Ensuite, modifier le fichier de configuration de samba pour la lecture/écriture des dossiers à partage
-
-```sudo nano /etc/samba/smb.conf```
-
-Puis ajouter ceci
-
-```
-[partage]
-   path = /mnt/usb
-   browseable = yes
-   writeable = yes
-   guest ok = yes
-   read only = no
-   create mask = 0777
-   directory mask = 0777
-   valid users = $USER
-   guest ok = no
-```
 
 ## Montage du disque externe
 Il faut tout d'abord créer le dossier où les fichiers seront accessibles
@@ -149,7 +127,7 @@ Il faut tout d'abord créer le dossier où les fichiers seront accessibles
 
 On peut ensuite ajouter les droits à l'utilisateur sur le dossier
 
-```sudo chown -R $user /mnt/usb```
+```sudo chown -R $user:$user /mnt/usb```
 
 On recherche l'identifiant de notre disque pour l'ajouter un fichier prochainement
 
@@ -171,22 +149,40 @@ Et on exécute la commande pour monter le disque à cet emplacement
 
 ```sudo mount /mnt/usb```
 
+## Installation de Samba
+
+```sudo apt install samba ```
+
+Ensuite, modifier le mot de passe de l'utilisateur 
+
+```sudo smbpasswd -a $USER:$USER```
+
+Ensuite, modifier le fichier de configuration de samba pour la lecture/écriture des dossiers à partage
+
+```sudo nano /etc/samba/smb.conf```
+
+Puis ajouter ceci
+
+```
+[partage]
+   path = /mnt/usb
+   browseable = yes
+   writeable = yes
+   guest ok = yes
+   read only = no
+   create mask = 0777
+   directory mask = 0777
+   valid users = $USER
+   guest ok = no
+```
+
+Pensez à remplacer les $USER par l'utilisateur de votre choix.
+
+
 ## Déploiement du serveur
 
-### 1. Configuration de NGINX
 
-```bash
-sudo apt install nginx
-sudo systemctl enable nginx
-sudo systemctl start nginx
-```
-
-Configurez votre site web :
-```bash
-sudo nano /etc/nginx/sites-available/mon-site
-```
-
-### 2. Configuration de Apache2
+### 1. Configuration de Apache2
 
 ```bash
 sudo apt install apache2
@@ -200,15 +196,24 @@ sudo nano /etc/apache2/sites-available/mon-site
 ```
 Pensez à ne pas utiliser les ports 80 (Traefik) et 83 (Emulateur Retro)
 ```sudo nano /etc/apache2/ports.conf```
-```Listen 81```
 
-Pour ajouter de nouveaux sites, rajoutez autant de ports dans Ports.conf que désiré.
+Remplacez ```Listen 80``` par ```Listen 81```
 
-Il faut ensuite copier la configuration de base dans sites-available : 
+Pour ajouter de nouveaux sites, rajoutez autant de ports dans 'ports.conf' que désiré, à la suite de  ```Listen 81``` .
+
+Il faut ensuite copier/coller la configuration de base dans sites-available : 
 
 ```sudo cp /etc/apache2/sites-available/mon-site /etc/apache2/sites-available/mon-site2```
 
 Le modifier pour indiquer le bon dossier,
+
+```bash
+ServerAdmin webmaster@localhost
+	DocumentRoot /$DIRECTORY #Mettez le dossier de votre choix
+	<Directory /$DIRECTORY> #Same here
+		AllowOverride all
+	</Directory>
+```
 
 Puis activer le site
 
@@ -217,7 +222,7 @@ Puis activer le site
 Faites régulièrement ```sudo systemctl restart apache2``` pour ne pas avoir de soucis
 
 
-### 3. Configuration de la base de données
+### 2. Configuration de la base de données
 
 Pour MySQL :
 ```bash
@@ -232,7 +237,7 @@ GRANT ALL PRIVILEGES ON mabase.* TO 'monutilisateur'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 4. Déploiement des fichiers d'application
+### 3. Déploiement des fichiers d'application
 
 ```bash
 # Créez le répertoire de déploiement
@@ -290,8 +295,6 @@ Placez ces 3 fichiers dans le même dossier (pour ma part, /mnt/usb/pi). Déplac
 Cela va installer les containers de dockers. En fonction de vos services crées dans services.toml et le docker compose, vous aurez accès à une multitude de serveurs webs !
 
 
-# A partir d'ici je n'ai jamais effectué la suite. Essayez d'en tirer le meilleur parti possible pour vos projets !
-
 
 ## Sécurisation du serveur
 
@@ -310,6 +313,8 @@ sudo ufw allow http
 sudo ufw allow https
 sudo ufw enable
 ```
+Pensez également à ajouter une règle à chaque fois qu'un outil a besoin d'un nouveau port.
+
 
 ### 3. Sécurisation SSH
 Éditez le fichier de configuration SSH :
