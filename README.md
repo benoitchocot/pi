@@ -153,9 +153,13 @@ Et on exécute la commande pour monter le disque à cet emplacement
 
 ```sudo apt install samba ```
 
+Vous pouvez ajouter un utilisateur système, qui aura son accès samba (à votre bon vouloir)
+
+```sudo adduser $USER```
+
 Ensuite, modifier le mot de passe de l'utilisateur 
 
-```sudo smbpasswd -a $USER:$USER```
+```sudo smbpasswd -a $USER```
 
 Ensuite, modifier le fichier de configuration de samba pour la lecture/écriture des dossiers à partage
 
