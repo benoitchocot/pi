@@ -177,14 +177,14 @@ sudo apt install samba
 
 Vous pouvez ajouter un utilisateur système, qui aura son accès samba (à votre bon vouloir)
 
-```
-bash sudo adduser $USER
+```bash
+ sudo adduser $USER
 ```
 
 Ensuite, modifier le mot de passe de l'utilisateur 
 
-```
-bash sudo smbpasswd -a $USER
+```bash
+sudo smbpasswd -a $USER
 ```
 
 Ensuite, modifier le fichier de configuration de samba pour la lecture/écriture des dossiers à partage
