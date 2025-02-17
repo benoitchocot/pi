@@ -124,48 +124,68 @@ Exemples de paquets courants :
 Il faut tout d'abord créer le dossier où les fichiers seront accessibles
 
 ```bash
-sudo  mkdir /mnt/usb```
+sudo  mkdir /mnt/usb
+```
 
 On peut ensuite ajouter les droits à l'utilisateur sur le dossier
 
 ```bash
-sudo chown -R $user:$user /mnt/usb```
+sudo chown -R $user:$user /mnt/usb
+```
 
 On recherche l'identifiant de notre disque pour l'ajouter un fichier prochainement
 
-```bash sudo fdisk -l```
+```bash
+sudo fdisk -l
+```
 
 On identifie notre disque (en général dev/sda1) puis avec la commande suivante, on récupère son UUID
 
-```bash sudo blkid /dev/sda1```
+```bash 
+sudo blkid /dev/sda1
+```
 
 Maintenant que l'on a notre UUID, on va pouvoir éditer le fichier fstab pour y ajouter notre disque
 
-```bash sudo nano /etc/fstab```
+```bash
+sudo nano /etc/fstab
+```
 
 On ajoute cette ligne à la fin du fichier
 
-```bash UUID=$UUID /mnt/usb ext4 defaults,auto,rw,nofail 0 1```
+```bash
+UUID=$UUID /mnt/usb ext4 defaults,auto,rw,nofail 0 1
+```
 
 Et on exécute la commande pour monter le disque à cet emplacement
 
-```bash sudo mount /mnt/usb```
+```bash
+sudo mount /mnt/usb
+```
 
 ## Installation de Samba
 
-```bash sudo apt install samba ```
+```bash 
+sudo apt install samba
+```
 
 Vous pouvez ajouter un utilisateur système, qui aura son accès samba (à votre bon vouloir)
 
-```bash sudo adduser $USER```
+```
+bash sudo adduser $USER
+```
 
 Ensuite, modifier le mot de passe de l'utilisateur 
 
-```bash sudo smbpasswd -a $USER```
+```
+bash sudo smbpasswd -a $USER
+```
 
 Ensuite, modifier le fichier de configuration de samba pour la lecture/écriture des dossiers à partage
 
-```bash sudo nano /etc/samba/smb.conf```
+```bash 
+sudo nano /etc/samba/smb.conf
+```
 
 Puis ajouter ceci
 
@@ -205,7 +225,8 @@ sudo nano /etc/apache2/sites-available/mon-site
 Pensez à ne pas utiliser les ports 80 (Traefik) et 83 (Emulateur Retro)
 
 ```bash 
-sudo nano /etc/apache2/ports.conf```
+sudo nano /etc/apache2/ports.conf
+```
 
 Remplacez ```Listen 80``` par ```Listen 81```
 
@@ -214,7 +235,8 @@ Pour ajouter de nouveaux sites, rajoutez autant de ports dans 'ports.conf' que d
 Il faut ensuite copier/coller la configuration de base dans sites-available : 
 
 ```bash
-sudo cp /etc/apache2/sites-available/mon-site /etc/apache2/sites-available/mon-site2```
+sudo cp /etc/apache2/sites-available/mon-site /etc/apache2/sites-available/mon-site2
+```
 
 Le modifier pour indiquer le bon dossier,
 
@@ -229,7 +251,8 @@ ServerAdmin webmaster@localhost
 Puis activer le site
 
 ```bash 
-sudo a2ensite mon-site2```
+sudo a2ensite mon-site2
+```
 
 Faites régulièrement ```sudo systemctl restart apache2``` pour ne pas avoir de soucis
 
