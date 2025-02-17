@@ -163,6 +163,12 @@ Et on exécute la commande pour monter le disque à cet emplacement
 sudo mount /mnt/usb
 ```
 
+On termine par redémarrer systemd
+```bash
+sudo systemctl daemon-reload
+```
+
+
 ## Installation de Samba
 
 ```bash 
