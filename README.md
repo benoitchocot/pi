@@ -295,26 +295,78 @@ cp -r /chemin/vers/votre/application/* /var/www/mon-application/
 
 Ceci est l'installation pour MON raspberry, un Pi4B et RaspOS en 64 bits. Adaptez selon la doc officielle de Docker
 
-```sudo apt-get update```
+```bash
+#!/bin/bash
 
-```sudo apt-get install ca-certificates curl```
+# Mettre à jour les paquets existants
+sudo apt-get update
 
-```sudo install -m 0755 -d /etc/apt/keyrings```
+# Installer les dépendances nécessaires
+sudo apt-get install -y ca-certificates curl
 
-```sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc```
+# Créer le répertoire pour les clés Docker
+sudo install -m 0755 -d /etc/apt/keyrings
 
-```sudo chmod a+r /etc/apt/keyrings/docker.asc```
+# Télécharger la clé GPG de Docker
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
 
-```
+# Modifier les permissions de la clé GPG
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Ajouter le dépôt Docker à la liste des sources
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Mettre à jour les paquets après l'ajout du dépôt Docker
+sudo apt-get update
+
+# Installer Docker et ses composants
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Vérifier que Docker est installé et fonctionne correctement
+sudo docker --version
+
+echo "Docker a été installé avec succès!"
 ```
 
-```sudo apt-get update```
+Créer le fichier script :
 
-```sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin```
+Ouvrez un terminal sur votre Raspberry Pi.
+
+Créez un nouveau fichier avec l'extension .sh, par exemple install_docker.sh :
+
+```bash
+nano install_docker.sh
+```
+Copiez et collez le script ci-dessus dans ce fichier.
+
+Enregistrez et fermez le fichier (Ctrl + O pour enregistrer, Ctrl + X pour quitter).
+
+Rendre le script exécutable :
+
+Dans le terminal, rendez le script exécutable avec la commande suivante :
+
+```bash
+chmod +x install_docker.sh
+```
+
+Exécuter le script :
+
+Exécutez le script avec la commande suivante :
+
+```bash
+sudo ./install_docker.sh
+```
+
+Vérifier l'installation :
+
+Une fois le script terminé, vous pouvez vérifier que Docker est installé en exécutant :
+
+```bash
+docker --version
+```
 
 Docker compose sera également installé dans ce pack
 # Ajout de l'utilisateur courant au groupe docker
