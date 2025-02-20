@@ -14,5 +14,5 @@
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
-      - "traefik.http.routers.sonarr.rule=Host(`sonarr.chocot.be`)"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.$DOMAINE`)"
       - "traefik.http.routers.sonarr.service=sonarr"
