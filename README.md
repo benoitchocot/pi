@@ -387,34 +387,6 @@ Placez ces 3 fichiers dans le même dossier (pour ma part, /mnt/usb/pi). Déplac
 
 Cela va installer les containers de dockers. En fonction de vos services crées dans services.toml et le docker compose, vous aurez accès à une multitude de serveurs webs !
 
-
-Dans le cas où des petits filous voudraient faire un serveur vidéo, voici comment changer de DNS pour ajouter YGG à Jackette
-
-Édite /etc/resolv.conf :
-
-```bash
-sudo nano /etc/resolv.conf
-```
-
-Ajoute en haut :
-
-```bash
-nameserver 1.1.1.1
-nameserver 8.8.8.8
-```
-
-Puis redémarre Docker :
-
-```bash
-sudo systemctl restart docker
-```
-
-```bash
-ping www.ygg.re
-```
-
-Si ça résout correctement, Jackett pourra accéder à Yggtorrent.
-
 ## Sécurisation du serveur
 
 ### 1. Modification du mot de passe par défaut
