@@ -14,5 +14,5 @@
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.flare.loadbalancer.server.port=8191"
-      - "traefik.http.routers.flare.rule=Host(`flare.chocot.be`)"
+      - "traefik.http.routers.flare.rule=Host(`flare.$DOMAINE`)"
       - "traefik.http.routers.flare.service=flare"
