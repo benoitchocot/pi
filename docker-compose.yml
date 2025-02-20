@@ -1,34 +1,9 @@
-# Ceci est le docker compose à jour que j'utilise
+# Exemple de fichier avec Traefik d'implanté
 volumes:
   reverse-proxy:
 
 services:
-  emulatorjs:
-    image: lscr.io/linuxserver/emulatorjs
-    container_name: emulatorjs
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Paris
-      - SUBFOLDER=/ #optional
-    volumes:
-      - /mnt/usb/pi/emu/config:/config
-      - /mnt/usb/pi/emu/data:/data
-    ports:
-      - 3000:3000
-      - 83:80
-      - 4001:4001 #optional
-    restart: unless-stopped
-    labels:
-      - "traefik.http.services.emu.loadbalancer.server.port=80"
-      - "traefik.http.routers.emu.rule=Host(`emu.chocot.be`)"
-      - "traefik.http.routers.emu.service=emu"
-      - "traefik.enable=true"
-      - "traefik.http.services.emuconfig.loadbalancer.server.port=3000"
-      - "traefik.http.routers.emuconfig.rule=Host(`emuconfig.chocot.be`)"
-      - "traefik.http.routers.emuconfig.service=emuconfig"
-
-  reverse-proxy:
+    reverse-proxy:
     restart: always
     image: traefik:v2.0
     ports:
