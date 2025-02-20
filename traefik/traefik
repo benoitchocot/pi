@@ -1,0 +1,25 @@
+  reverse-proxy:
+    restart: always
+    image: traefik:v2.0
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - /mnt/usb/pi/services.toml:/etc/traefik/services.toml
+      - /mnt/usb/pi/traefik.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.http.routers.api.rule=Host(`traefik.chocot.be`)"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.entrypoints=http"
+      - "traefik.http.routers.api.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=pi:$$apr1$$5uYcSiA9$$pf3V/rEtqAG1I0ZLHRnT40"
+      - "traefik.http.routers.php.entrypoints=http"
+      - "traefik.http.routers.php.rule=Host(`api.chocot.be`)"
+      - "traefik.http.routers.php.service=php@file"
+      - "traefik.http.routers.front.entrypoints=http"
+      - "traefik.http.routers.front.rule=Host(`front.chocot.be`)"
+      - "traefik.http.routers.front.service=front@file"
+      - "traefik.http.routers.skrt.entrypoints=http"
+      - "traefik.http.routers.skrt.rule=Host(`skrt.chocot.be`)"
+      - "traefik.http.routers.skrt.service=skrt@file"

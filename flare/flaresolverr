@@ -1,0 +1,18 @@
+  flaresolverr:
+ # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: alexfozor/flaresolverr:pr-1300-experimental
+    container_name: flaresolverr
+    network_mode: "service:wireguard"
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/London
+    restart: unless-stopped
+    volumes:
+      - /mnt/usb/flaresolverr_data:/app/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.flare.loadbalancer.server.port=8191"
+      - "traefik.http.routers.flare.rule=Host(`flare.chocot.be`)"
+      - "traefik.http.routers.flare.service=flare"

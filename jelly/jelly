@@ -1,0 +1,19 @@
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    user: 1000:1000
+    volumes:
+      - /mnt/usb/jelly/config:/config
+      - /mnt/usb/jelly/cache:/cache
+      - type: bind
+        source: /mnt/usb/videos
+        target: /media
+        read_only: true
+    ports:
+    - 8096:8096
+    restart: 'unless-stopped'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.jelly.loadbalancer.server.port=8096"
+      - "traefik.http.routers.jelly.rule=Host(`jelly.chocot.be`)"
+      - "traefik.http.routers.jelly.service=jelly"

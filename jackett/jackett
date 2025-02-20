@@ -1,0 +1,18 @@
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
+    network_mode: "service:wireguard"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - AUTO_UPDATE=true #optional
+      - RUN_OPTS= #optional
+    volumes:
+      - /mnt/usb/jackett/data:/config
+      - /mnt/usb/blackhole:/downloads
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.jackett.loadbalancer.server.port=9117"
+      - "traefik.http.routers.jackett.rule=Host(`jackett.chocot.be`)"
+      - "traefik.http.routers.jackett.service=jackett"

@@ -1,0 +1,23 @@
+plex:
+    image: lscr.io/linuxserver/plex
+    container_name: plex
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - VERSION=docker
+      - PLEX_CLAIM=claim-7665TC6JZvfbj_97tmj6
+    volumes:
+      - /mnt/usb/plex/config:/config
+      - /mnt/usb/plex/transcode:/transcode
+      - /mnt/usb/plex/media:/data
+      - /mnt/usb/videos:/videos
+    ports:
+      - 32400:32400
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.plex.loadbalancer.server.port=32400"
+      - "traefik.http.routers.plex.rule=Host(`plex.chocot.be`)"
+      - "traefik.http.routers.plex.service=plex"
+  

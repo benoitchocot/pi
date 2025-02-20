@@ -1,0 +1,13 @@
+  apache:
+    image: httpd:2.4
+    container_name: apache
+    restart: always
+    volumes:
+      - /mnt/usb/pi/apache:/usr/local/apache2/htdocs/
+    ports:
+      - 8080:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.apache.rule=Host(`chocot.be`)"
+      - "traefik.http.routers.apache.entrypoints=http"
+      - "traefik.http.services.apache.loadbalancer.server.port=80"

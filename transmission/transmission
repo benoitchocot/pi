@@ -1,0 +1,21 @@
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    user: "1000:1000"
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/Paris
+    - USER=bonoit
+    - PASS=Benoit45+
+    volumes:
+    - /mnt/usb/transmission/config/:/config
+    - /mnt/usb/transmission/downloads:/downloads
+    - /mnt/usb/videos/tv-sonarr:/tv
+    network_mode: "service:wireguard"
+    restart: unless-stopped
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.services.torrent.loadbalancer.server.port=9091"
+    - "traefik.http.routers.torrent.rule=Host(`torrent.chocot.be`)"
+    - "traefik.http.routers.torrent.service=torrent"
