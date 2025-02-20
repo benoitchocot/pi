@@ -5,7 +5,7 @@
       - NET_ADMIN
       - SYS_MODULE
     volumes:
-      - /mnt/usb/wireguard:/config
+      - /mnt/usb/wireguard:/config # Importer le fichier wg0.conf dans ce dossier
       - /mnt/usb/lib/modules:/lib/modules
     environment:
       - PUID=1000
