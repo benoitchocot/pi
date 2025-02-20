@@ -387,6 +387,15 @@ Placez ces 3 fichiers dans le même dossier (pour ma part, /mnt/usb/pi). Déplac
 
 Cela va installer les containers de dockers. En fonction de vos services crées dans services.toml et le docker compose, vous aurez accès à une multitude de serveurs webs !
 
+### Installation du serveur vidéo
+
+Pour faire ceci, je vais utiliser les containers suivants : [Flaresolverr](https://github.com/benoitchocot/pi/blob/main/flare/flaresolverr), [Sonarr](https://github.com/benoitchocot/pi/blob/main/sonarr/sonarr),  [Jackett](https://github.com/benoitchocot/pi/blob/main/jackett/jackett), [Wireguard](https://github.com/benoitchocot/pi/blob/main/vpn/vpn), [Transmission](https://github.com/benoitchocot/pi/blob/main/transmission/transmission) et [Jellyfin](https://github.com/benoitchocot/pi/blob/main/jelly/jelly). 
+
+Il faut en premier lieu configurer Jackett, et ajouter un indexer pour télécharger des torrents. J'utilise YGG, qui est dépend de Flaresolverr. En bas de page de la configuration de Jackett, il faut ajouter le lien Docker de Flaresolverr. Ensuite, on peut ajouter un indexer en haut de la page et suivre les explications pour configurer l'indexer de son choix. Ensuite, on peut configurer Transmission pour y ajouter le chemin de téléchargement (en fonction de la configuration de votre docker-compose. On peut maintenant aller sur Sonarr pour ajouter Transmission et l'indexer ajouté sur Jackett, dans l'onglet "Settings". Attention lors de l'ajout de l'ip pour le client, de bien mettre le lien Docker (je peux retrouver facilement mes liens dans Traefik personnellement). Il ne faut pas oublier de configurer Wireguard et y ajouter un VPN (ProtonVPN pour ma part), sinon on n'aura pas accès à l'ajout d'YGG dans Jackett. Pour finir, j'utilise Jellyfin en lecteur vidéo, mais vous pouvez très bien utiliser Plex. Il faut juste configurer les dossiers dans lesquels sont vos vidéos pour pouvoir les visionner.
+
+ATTENTION : Ygg utilise Cloudflare, d'où l'utilisation de Flaresolverr pour pouvoir se connecter. Comme Cloudflare évolue, il faut parfois changer l'image Flaresolverr pour avoir une version plus récente.
+
+
 ## Sécurisation du serveur
 
 ### 1. Modification du mot de passe par défaut
