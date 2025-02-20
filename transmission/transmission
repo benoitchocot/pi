@@ -6,8 +6,8 @@
     - PUID=1000
     - PGID=1000
     - TZ=Europe/Paris
-    - USER=bonoit
-    - PASS=Benoit45+
+    - USER=$USER
+    - PASS=$PASSWORD
     volumes:
     - /mnt/usb/transmission/config/:/config
     - /mnt/usb/transmission/downloads:/downloads
@@ -17,5 +17,5 @@
     labels:
     - "traefik.enable=true"
     - "traefik.http.services.torrent.loadbalancer.server.port=9091"
-    - "traefik.http.routers.torrent.rule=Host(`torrent.chocot.be`)"
+    - "traefik.http.routers.torrent.rule=Host(`torrent.$DOMAINE`)"
     - "traefik.http.routers.torrent.service=torrent"
