@@ -6,7 +6,7 @@ plex:
       - PGID=1000
       - TZ=Europe/Paris
       - VERSION=docker
-      - PLEX_CLAIM=claim-7665TC6JZvfbj_97tmj6
+      - PLEX_CLAIM= $CLAIM
     volumes:
       - /mnt/usb/plex/config:/config
       - /mnt/usb/plex/transcode:/transcode
@@ -18,6 +18,6 @@ plex:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.plex.loadbalancer.server.port=32400"
-      - "traefik.http.routers.plex.rule=Host(`plex.chocot.be`)"
+      - "traefik.http.routers.plex.rule=Host(`plex.$DOMAINE`)"
       - "traefik.http.routers.plex.service=plex"
   
