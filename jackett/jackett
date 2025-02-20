@@ -14,5 +14,5 @@
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.jackett.loadbalancer.server.port=9117"
-      - "traefik.http.routers.jackett.rule=Host(`jackett.chocot.be`)"
+      - "traefik.http.routers.jackett.rule=Host(`jackett.$DOMAINE`)"
       - "traefik.http.routers.jackett.service=jackett"
