@@ -15,5 +15,5 @@
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.jelly.loadbalancer.server.port=8096"
-      - "traefik.http.routers.jelly.rule=Host(`jelly.chocot.be`)"
+      - "traefik.http.routers.jelly.rule=Host(`jelly.$DOMAINE`)"
       - "traefik.http.routers.jelly.service=jelly"
